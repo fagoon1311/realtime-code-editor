@@ -1,5 +1,5 @@
 import React from 'react'
-import Avatar from 'react-avatar'
+import { Avatar } from 'radix-ui'
 
 const Client = ({userName}) => {
     console.log(userName)

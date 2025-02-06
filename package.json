@@ -6,12 +6,13 @@
     "@radix-ui/react-avatar": "^1.1.2",
     "codemirror": "^5.65.11",
     "cra-template": "1.2.0",
+    "express": "^4.21.2",
     "react": "^19.0.0",
-    "react-avatar": "^5.0.3",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.1",
     "react-router-dom": "^7.1.4",
     "react-scripts": "5.0.1",
+    "socket.io": "^4.8.1",
     "uuid": "^11.0.5",
     "web-vitals": "^4.2.4"
   },
@@ -19,7 +20,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server:dev": "nodemon server.js",
+    "server:prod": "node server.js"
   },
   "eslintConfig": {
     "extends": [
@@ -37,12 +40,9 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ],
-    "overrides": {
-      "react-avatar-editor": {
-        "react": ">=18.0.0",
-        "react-dom": ">=18.0.0"
-      }
-    }
+    ]
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

@@ -39,6 +39,12 @@ io.on('connection', (socket) => {
             })// emit the joined event to all the clients in the room
         })
     })
+
+    socket.on(ACTIONS.CODE_CHANGE, ({roomId, code}) => {
+        //io.to(roomId).emit(ACTIONS.CODE_CHANGE, {code}) // this line shows code change to all the clients in the room
+        socket.in(roomId).emit(ACTIONS.CODE_CHANGE, {code}) // this line shows code change to all the clients in the room except the sender
+    })
+
     socket.on('disconnecting', () => {
         const rooms = [...socket.rooms]
         rooms.forEach((roomId)=>{

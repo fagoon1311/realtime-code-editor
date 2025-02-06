@@ -7,6 +7,7 @@ const {Server} = require('socket.io')
 const http = require('http');
 
 const ACTIONS = require('./src/Actions');
+const { use } = require('react');
 
 const server = http.createServer(app)
 
@@ -30,6 +31,24 @@ io.on('connection', (socket) => {
         socket.join(roomId) // join the room
         const clients = getAllConnectedClients(roomId) // get the clients in the room
         console.log('Clients', clients)
+        clients.forEach(({socketId}) => {
+            io.to(socketId).emit(ACTIONS.JOINED, {
+                clients,
+                userName,
+                socketId: socket.id
+            })// emit the joined event to all the clients in the room
+        })
+    })
+    socket.on('disconnecting', () => {
+        const rooms = [...socket.rooms]
+        rooms.forEach((roomId)=>{
+            socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
+                socketId: socket.id, 
+                userName: userSocketMap[socket.id]
+            }) // emit the disconnected event to all the clients in the room
+        })
+        delete userSocketMap[socket.id] // remove the user from the map
+        socket.leave() // leave the room
     })
 })
 

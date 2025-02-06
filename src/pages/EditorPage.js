@@ -13,6 +13,7 @@ const EditorPage = () => {
   const location = useLocation() // useLocation hook to get the location object from the react-router-dom.
   const reactNavigator = useNavigate();
   const { roomId } = useParams()
+  const [clients, setClients] = useState([])
 
   useEffect(() => {
     const init = async () => {
@@ -31,25 +32,30 @@ const EditorPage = () => {
         roomId,
         userName: location.state?.userName
       })
+
+      socketRef.current.on(ACTIONS.JOINED, ({clients, userName, socketId}) => {
+        if (userName != location.state?.userName) {
+          toast.success(`${userName} joined the room!`)
+          console.log(`${userName} joined the room!`)
+        }
+        setClients(clients)
+
+      })
+
+      //listening for disconnected
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({socketId, userName}) => {
+        toast.success(`${userName} left the room!`)
+        setClients(clients => clients.filter(client => client.socketId !== socketId))
+      })
    }
     init()
+
+    // clearing the listeners
+   
   }, [])
 
+  
 
-  const [clients, setClients] = useState([{
-    socketId: 1,
-    userName: 'Fagoon'
-  },{
-    socketId: 2,
-    userName: 'John'
-  },{
-    socketId: 3,
-    userName: 'Doe'
-  },{
-    socketId: 4,
-    userName: 'Jane'
-  }
-  ])
 
   if(!location.state) return <Navigate to='/' />
 

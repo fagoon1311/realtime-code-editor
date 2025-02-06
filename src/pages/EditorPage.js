@@ -1,9 +1,27 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Client from '../components/Client'
 import Editor from '../components/Editor'
+import ACTIONS from '../Actions'
+import { useLocation } from 'react-router-dom'
+import { initSocket } from '../socket'
 
 
 const EditorPage = () => {
+
+  const socketRef = useRef(null) // useRef to store the socket connection it avoids re-rendering of the component.
+  const location = useLocation() // useLocation hook to get the location object from the react-router-dom.
+  useEffect(() => {
+    const init = async () => {
+      socketRef.current = await initSocket()
+    //   socketRef.current.emit(ACTIONS.JOIN, {
+    //     roomId,
+    //     userName: location.state?.userName
+    //   })
+   }
+    init()
+  }, [])
+
+
   const [clients, setClients] = useState([{
     socketId: 1,
     userName: 'Fagoon'

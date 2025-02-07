@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { use, useEffect, useRef, useState } from 'react'
 import Client from '../components/Client'
 import Editor from '../components/Editor'
 import ACTIONS from '../Actions'
@@ -14,6 +14,7 @@ const EditorPage = () => {
   const reactNavigator = useNavigate();
   const { roomId } = useParams()
   const [clients, setClients] = useState([])
+  const codeRef = useRef(null)
 
   useEffect(() => {
     const init = async () => {
@@ -39,8 +40,14 @@ const EditorPage = () => {
           console.log(`${userName} joined the room!`)
         }
         setClients(clients)
+        socketRef.current.emit(ACTIONS.SYNC_CODE, {
+          code: codeRef.current,
+          socketId,
+        })
 
       })
+
+      
 
       //listening for disconnected
       socketRef.current.on(ACTIONS.DISCONNECTED, ({socketId, userName}) => {
@@ -64,6 +71,10 @@ const EditorPage = () => {
     }
   }
   
+  function leaveRoom() {
+    reactNavigator('/')
+
+  }
 
 
   if(!location.state) return <Navigate to='/' />
@@ -83,10 +94,10 @@ const EditorPage = () => {
           </div>
         </div>
         <button className='btn copyBtn' onClick={copyRoomId}>Copy ROOM ID</button>
-        <button className='btn leaveBtn'>Leave</button> 
+        <button className='btn leaveBtn' onClick={leaveRoom}>Leave</button> 
       </div>
       <div className='editorWrap'>
-        <Editor socketRef={socketRef} roomId = {roomId}/>
+        <Editor socketRef={socketRef} roomId = {roomId} onCodeChange={(code)=>{codeRef.current = code}}/>
       </div>
     </div>
   )

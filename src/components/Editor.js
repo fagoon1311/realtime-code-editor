@@ -8,7 +8,7 @@ import 'codemirror/addon/edit/closetag';
 import ACTIONS from '../Actions';
 
 
-const Editor = ({socketRef, roomId}) => {
+const Editor = ({socketRef, roomId, onCodeChange}) => {
   const editorRef = useRef(null)
 
     useEffect(() => {
@@ -27,6 +27,7 @@ const Editor = ({socketRef, roomId}) => {
               console.log('changes', changes)
               const {origin} = changes 
               const code = instance.getValue() // copies content of the editor to the code variable
+              onCodeChange(code)
               if(origin !== 'setValue'){
                 socketRef.current.emit(ACTIONS.CODE_CHANGE, {
                   roomId,
@@ -52,6 +53,10 @@ const Editor = ({socketRef, roomId}) => {
           editorRef.current.setValue(code)
         }
       })
+      }
+
+      return () => {
+        socketRef.current.off(ACTIONS.CODE_CHANGE)
     }
     }, [socketRef.current]) 
 

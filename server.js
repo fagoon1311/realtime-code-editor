@@ -8,10 +8,17 @@ const http = require('http');
 
 const ACTIONS = require('./src/Actions');
 const { use } = require('react');
+const path = require('path');
 
 const server = http.createServer(app)
 
 const io = new Server(server) // this initializes a new instance of socket.io for the server
+
+app.use(express.static('build')) // this serves the build folder of the react app
+
+app.use((req, res, next)=>{
+    res.sendFile(path.join(__dirname, 'build', 'index.html')) // this serves the index.html file of the react app on every request.
+})
 
 const userSocketMap = {}
 
@@ -44,6 +51,12 @@ io.on('connection', (socket) => {
         //io.to(roomId).emit(ACTIONS.CODE_CHANGE, {code}) // this line shows code change to all the clients in the room
         socket.in(roomId).emit(ACTIONS.CODE_CHANGE, {code}) // this line shows code change to all the clients in the room except the sender
     })
+
+    socket.on(ACTIONS.CODE_SYNC, ({socketId, code}) => {
+        //io.to(roomId).emit(ACTIONS.CODE_CHANGE, {code}) // this line shows code change to all the clients in the room
+        io.to(socketId).emit(ACTIONS.CODE_CHANGE, {code}) // this line shows code change to all the clients in the room except the sender
+    })
+
 
     socket.on('disconnecting', () => {
         const rooms = [...socket.rooms]
